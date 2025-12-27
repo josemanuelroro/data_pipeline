@@ -1,0 +1,17 @@
+#.gitignore
+backend/.env
+.env
+notebooks/
+backend/data_shared/
+#---AIRFLOW---#
+backend/airflow/logs
+backend/airflow/__pycache__
+#---SCRAPPER---#
+backend/scraper/usuarios.py
+backend/scraper/eroski_scrapper.py
+backend/scraper/post_script.py
+#---SPARK---#
+backend/spark/carga_posts.py
+#---JENKINS---#
+infraestructure/jenkins/default-user.groovy
+infraestructure/jenkins/plugins.txt

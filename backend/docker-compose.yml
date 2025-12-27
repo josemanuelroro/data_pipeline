@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  # --- DB (MySQL) ---
+  mysql_db:
+    build: ./mysql_init
+    container_name: mysql_db
+    networks:
+      - data_network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      #MYSQL_USER: ${MYSQL_USER}
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./data_shared:/app/data/shared  
+      - ./mysql_init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # --- SCRAPPER ---
+  scraper:
+    build: ./scraper       
+    container_name: scrapper
+    networks:
+      - data_network
+    volumes:
+      - ./scraper:/app      
+      - ./data_shared:/app/data/scrapper_vol
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - mysql_db
+
+  # --- ETL (Spark) ---
+  pyspark:
+    build: ./spark 
+    container_name: spark
+    networks:
+      - data_network
+    ports:
+      - "8888:8888"
+      - "4040:4040"   
+    volumes:
+      - ./data_shared:/app/data/scrapper_vol
+      - ./spark:/app/scripts
+      - ./notebooks:/home/jovyan/work
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - DB_HOST=metadata_db
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_USER=${MYSQL_USER}
+    user: root
+    restart: on-failure
+
+
+
+  init-docker-socket:
+    image: alpine:latest
+    container_name: init_docker_socket
+    user: root  
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command: chmod 666 /var/run/docker.sock
+
+
+  # --- Orchestration (Airflow) ---
+  airflow:
+    container_name: airflow
+    build: 
+      context: .
+      dockerfile: airflow/Dockerfile
+    restart: always
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=airflow
+      - _AIRFLOW_WWW_USER_PASSWORD=airflow
+      - AIRFLOW__CORE__PARALLELISM=4 
+      - AIRFLOW__CORE__DAG_CONCURRENCY=4 
+      - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30 
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - "8080:8080"
+    
+    command: >
+      bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
+
+
+# --- Monitoring ---
+  telegram_bot:
+      build: ./telegram
+      container_name: telegram_monitor
+      restart: always
+      networks:
+        - data_network
+      environment:
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+        - TELEGRAM_CHAT_ID=${CHAT_ID}
+      volumes:
+        - ./data_shared:/data_shared
+        - ./telegram/status.json:/app/status.json
+        - ./telegram/scripts/watcher.py:/app/watcher.py
+    
+
+volumes:
+  mysql_data:
+  jenkins_home:
+
+networks:
+  data_network:
+    driver: bridge
