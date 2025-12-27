@@ -12,6 +12,7 @@ backend/scraper/eroski_scrapper.py
 backend/scraper/post_script.py
 #---SPARK---#
 backend/spark/carga_posts.py
+backend/spark/clean_file.py
 #---JENKINS---#
 infraestructure/jenkins/default-user.groovy
 infraestructure/jenkins/plugins.txt
