@@ -33,8 +33,8 @@ services:
       volumes:
         - ./jenkins/config:/var/jenkins_home
         - /var/run/docker.sock:/var/run/docker.sock
-      # Ejecutamos el chown mágico
-      command: sh -c "chown -R 1000:1000 /var/jenkins_home && chmod 666 /var/run/docker.sock"
+        - ../backend/data_shared:/data_shared
+      command: sh -c "chown -R 1000:1000 /var/jenkins_home /data_shared && chmod 666 /var/run/docker.sock"
 
 volumes:
   jenkins_home:
