@@ -6,9 +6,11 @@ services:
     #user: root
     environment:
       - JENKINS_OPTS="--logfile=/var/jenkins_home/jenkins.log"
-    ports:
-      - "8081:8080"
-      - "50000:50000"
+    #ports:
+    #  - "8081:8080"
+    #  - "50000:50000"
+    expose:
+    - "8080"
     volumes:
       #- jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
@@ -24,6 +26,8 @@ services:
     depends_on:
       jenkins-permissions:
         condition: service_completed_successfully
+    networks:
+      - link_network
     #command: chmod 666 /var/run
 
 #Jenkins permissions
@@ -36,5 +40,26 @@ services:
         - ../backend/data_shared:/data_shared
       command: sh -c "chown -R 1000:1000 /var/jenkins_home /data_shared && chmod 666 /var/run/docker.sock"
 
+  # --- WATCHER ---
+  nginx:
+    image: nginx:alpine
+    container_name: gateway_nginx
+    user: root
+    ports:
+      - "90:80" 
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./data_shared/logs:/var/log/nginx
+    depends_on:
+      - jenkins
+    networks:
+      #- backend_data_network
+      - link_network
+
 volumes:
   jenkins_home:
+
+networks:
+  link_network:
+   driver: bridge
+   name: link_network

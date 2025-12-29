@@ -109,9 +109,12 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    ports:
-      - "8080:8080"
-    
+    #ports:
+    #  - "8080:8080"
+    expose:
+    - "8080"
+    networks:
+      - link_network
     command: >
       bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
 
@@ -128,9 +131,11 @@ services:
         - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
         - TELEGRAM_CHAT_ID=${CHAT_ID}
       volumes:
-        - ./data_shared:/data_shared
+        - ./data_shared:/backend/data_shared
+        - ../infraestructure/data_shared/logs:/infraestructure/data_shared/logs
         - ./telegram/status.json:/app/status.json
         - ./telegram/scripts/watcher.py:/app/watcher.py
+        - ./telegram/scripts/watcher.py:/app/watcher_improved.py
     
 
 volumes:
@@ -140,3 +145,6 @@ volumes:
 networks:
   data_network:
     driver: bridge
+  link_network:
+    external: true
+    name: link_network
