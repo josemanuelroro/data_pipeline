@@ -60,7 +60,7 @@ fi
 mkdir -p ~/.docker
 echo &apos;{&quot;credsStore&quot;: &quot;&quot;}&apos; &gt; ~/.docker/config.json
 docker-compose down
-docker-compose up -d --build
+docker-compose up -d --build --remove-orphans
 docker image prune -f
 </command>
       <configuredLocalRules/>
