@@ -48,8 +48,9 @@ services:
     ports:
       - "90:80" 
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      #- ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./data_shared/logs:/var/log/nginx
+      - ./nginx/templates:/etc/nginx/templates
       #- ./nginx/auth:/etc/nginx/auth
     depends_on:
       - jenkins
@@ -57,6 +58,8 @@ services:
     environment:
       - NGINX_USER=${NGINX_USER}
       - NGINX_PASSWORD=${NGINX_PASSWORD}
+      - JENKINS_DOMAIN=${JENKINS_DOMAIN}
+      - AIRFLOW_DOMAIN=${AIRFLOW_DOMAIN}
     networks:
       #- backend_data_network
       - link_network
