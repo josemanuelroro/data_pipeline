@@ -72,52 +72,7 @@ services:
 
 
 
-  init-docker-socket:
-    image: alpine:latest
-    container_name: init_docker_socket
-    user: root  
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    command: chmod 666 /var/run/docker.sock
-
-
-  # --- Orchestration (Airflow) ---
-  airflow:
-    container_name: airflow
-    build: 
-      context: .
-      dockerfile: airflow/Dockerfile
-    restart: always
-    environment:
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - _AIRFLOW_WWW_USER_CREATE=true
-      - _AIRFLOW_WWW_USER_USERNAME=airflow
-      - _AIRFLOW_WWW_USER_PASSWORD=airflow
-      - AIRFLOW__CORE__PARALLELISM=4 
-      - AIRFLOW__CORE__DAG_CONCURRENCY=4 
-      - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30 
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - /var/run/docker.sock:/var/run/docker.sock
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    #ports:
-    #  - "8080:8080"
-    expose:
-    - "8080"
-    networks:
-      - link_network
-    command: >
-      bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
-
+  
 
 # --- Monitoring ---
   telegram_bot:
@@ -145,6 +100,3 @@ volumes:
 networks:
   data_network:
     driver: bridge
-  link_network:
-    external: true
-    name: link_network

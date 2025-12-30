@@ -42,7 +42,7 @@ services:
 
   # --- WATCHER ---
   nginx:
-    image: nginx:alpine
+    build: ./nginx
     container_name: gateway_nginx
     user: root
     ports:
@@ -50,11 +50,53 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./data_shared/logs:/var/log/nginx
+      #- ./nginx/auth:/etc/nginx/auth
     depends_on:
       - jenkins
+      - airflow
+    environment:
+      - NGINX_USER=${NGINX_USER}
+      - NGINX_PASSWORD=${NGINX_PASSWORD}
     networks:
       #- backend_data_network
       - link_network
+
+
+  # --- Orchestration (Airflow) ---
+  airflow:
+    container_name: airflow
+    build: 
+      context: .
+      dockerfile: airflow/Dockerfile
+    restart: always
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=airflow
+      - _AIRFLOW_WWW_USER_PASSWORD=airflow
+      - AIRFLOW__CORE__PARALLELISM=4 
+      - AIRFLOW__CORE__DAG_CONCURRENCY=4 
+      - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30 
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      jenkins-permissions:
+        condition: service_completed_successfully
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    #ports:
+    #  - "8080:8080"
+    expose:
+    - "8080"
+    networks:
+      - link_network
+    command: >
+      bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
+
 
 volumes:
   jenkins_home:
