@@ -72,8 +72,6 @@ services:
 
 
 
-  
-
 # --- Monitoring ---
   telegram_bot:
       build: ./telegram
@@ -89,8 +87,7 @@ services:
         - ./data_shared:/backend/data_shared
         - ../infraestructure/data_shared/logs:/infraestructure/data_shared/logs
         - ./telegram/status.json:/app/status.json
-        - ./telegram/scripts/watcher.py:/app/watcher.py
-        - ./telegram/scripts/watcher.py:/app/watcher_improved.py
+        - ./telegram/scripts/:/app/
     
 
 volumes:

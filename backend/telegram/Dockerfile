@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 #COPY /scripts/watcher.py .
 
-CMD ["python", "-u", "watcher_improved.py"]
+CMD ["python", "-u", "watcher.py"]
