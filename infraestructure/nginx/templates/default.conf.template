@@ -1,7 +1,9 @@
 # ---JENKINS---
 server {
     listen 80;
-    server_name ${JENKINS_DOMAIN}; #this is what you write in web and it is mapped internally to the proxy_pass
+    server_name ${JENKINS_DOMAIN}; #this is what you write in web and it is mapped internally to the proxy_passç
+    access_log /var/log/nginx/serv_access.log;
+    error_log /var/log/nginx/serv_error.log;
     auth_basic "Area Restringida";
     auth_basic_user_file /etc/nginx/.htpasswd;
     location / {
@@ -18,6 +20,8 @@ server {
 server {
     listen 80;
     server_name ${AIRFLOW_DOMAIN};
+    access_log /var/log/nginx/serv_access.log;
+    error_log /var/log/nginx/serv_error.log;
     auth_basic "Area Restringida";
     auth_basic_user_file /etc/nginx/.htpasswd;
     location / {
