@@ -3,12 +3,14 @@ import time
 import requests
 import datetime
 
-
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
-
 LOG_FILE = "/infraestructure/data_shared/logs/serv_access.log"
+
+EXTENSIONES_IGNORAR = ('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.map', '.ttf')
+MI_IP = "PON_TU_IP_AQUI" 
+CACHE_IPS = {}
+TIEMPO_SILENCIO = 600
 
 def enviar_telegram(mensaje):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -18,21 +20,17 @@ def enviar_telegram(mensaje):
     except Exception as e:
         print(f"Error enviando Telegram: {e}")
 
-
 def follow(thefile):
-
     thefile.seek(0, os.SEEK_END)
     while True:
         line = thefile.readline()
         if not line:
-            time.sleep(0.5) 
+            time.sleep(0.5)
             continue
         yield line
 
-
 if __name__ == "__main__":
-    print(f"---  Vigilante de Jenkins (Tiempo Real) Iniciado: {datetime.datetime.now()} ---")
-    
+    print(f"--- Vigilante de Jenkins (Tiempo Real) Iniciado: {datetime.datetime.now()} ---")
 
     while not os.path.exists(LOG_FILE):
         print(f"Esperando fichero: {LOG_FILE}...")
@@ -40,32 +38,48 @@ if __name__ == "__main__":
 
     print("Fichero detectado. Monitorizando...")
 
-
     try:
         with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as logfile:
-            
-            
             logs_en_tiempo_real = follow(logfile)
             
             for line in logs_en_tiempo_real:
                 if line:
-                    parts = line.split(' ')
-                    
-                    if len(parts) >= 3:
-                        fecha = parts[3].strip()
-                        ip = parts[0].strip()
-                        tipo=parts[8].strip()
+                    try:
+                        parts = line.split(' ')
                         
-                        ip_info = ip if ip != "System/Internal" else "Interna/Docker"
-                        
-                        alert = f"⚡ Acceso Detectado \n IP: {ip_info} \n Fecha: {fecha} \n Tipo: {tipo}"
-                        enviar_telegram(alert)
+                        if len(parts) >= 9:
+                            ip = parts[0].strip()
+                            fecha = parts[3].strip()
+                            url = parts[6].strip()
+                            tipo = parts[8].strip()
+
+                            if any(url.endswith(ext) for ext in EXTENSIONES_IGNORAR):
+                                continue
+
+                            if ip == MI_IP:
+                                continue
+
+                            enviar_alerta = False
+
+                            if tipo in ['401', '403', '404', '500', '502', '503']:
+                                enviar_alerta = True
+                            else:
+                                tiempo_actual = time.time()
+                                ultima_vez = CACHE_IPS.get(ip, 0)
+
+                                if (tiempo_actual - ultima_vez) > TIEMPO_SILENCIO:
+                                    enviar_alerta = True
+                                    CACHE_IPS[ip] = tiempo_actual
+
+                            if enviar_alerta:
+                                ip_info = ip if ip != "System/Internal" else "Interna/Docker"
+                                alert = f"⚡ Acceso Detectado \n IP: {ip_info} \n Fecha: {fecha} \n Tipo: {tipo} \n URL: {url}"
+                                enviar_telegram(alert)
+
+                    except IndexError:
+                        continue
 
     except KeyboardInterrupt:
         print("\n Deteniendo Watcher...")
     except Exception as e:
         print(f"💀 Error Fatal: {e}")
-
-
-
-
