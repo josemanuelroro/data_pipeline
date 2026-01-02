@@ -23,3 +23,5 @@ infraestructure/data_shared/
 infraestructure/.env
 #---NGINX---#
 infraestructure/auth
+#---MNIO---#
+backend/datalake_minio
