@@ -42,15 +42,9 @@ dag = DAG(
     max_active_tasks=3,
     is_paused_upon_creation=False
 )
-test = BashOperator(
-    task_id='test_task',
-    bash_command='echo "hola"',
-    execution_timeout=timedelta(minutes=30),
-    #pool='scrapper_pool',
-    dag=dag,
-)
 
-'''
+
+
 # Tareas para ejecutar los scrapers dentro del contenedor 'scrapper_py'
 dia_scrapper = BashOperator(
     task_id='dia_scrapper',
@@ -67,7 +61,7 @@ mercadona_scrapper = BashOperator(
     execution_timeout=timedelta(minutes=30),
     #pool='scrapper_pool',
     dag=dag,
-)'''
+)
 
-[test]
-#[dia_scrapper,mercadona_scrapper]
+
+[dia_scrapper,mercadona_scrapper]
