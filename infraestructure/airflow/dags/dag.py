@@ -2,6 +2,25 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
+import os
+import requests
+
+
+def notificar(context):
+    task_instance = context.get('task_instance')
+    task_id = task_instance.task_id
+    execution_date = context.get('execution_date')
+    
+    token = os.getenv("TELEGRAM_TOKEN")
+    chat_id = os.getenv("CHAT_ID")
+
+    mensaje = f"✅ **Task**\n" \
+              f"📔 Task: `{task_id}`\n" \
+              f"⌛Start Time: {execution_date}"
+              
+
+    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
+                  data={'chat_id': chat_id, 'text': mensaje, 'parse_mode': 'Markdown'})
 
 # Definir argumentos por defecto del DAG
 default_args = {
@@ -10,6 +29,7 @@ default_args = {
     'start_date': datetime(2025, 12, 22),  # Ajusta la fecha de inicio
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'on_success_callback': notificar,
 }
 
 # Crear el DAG
@@ -22,8 +42,15 @@ dag = DAG(
     max_active_tasks=3,
     is_paused_upon_creation=False
 )
+test = BashOperator(
+    task_id='test_task',
+    bash_command='echo "hola"',
+    execution_timeout=timedelta(minutes=30),
+    #pool='scrapper_pool',
+    dag=dag,
+)
 
-
+'''
 # Tareas para ejecutar los scrapers dentro del contenedor 'scrapper_py'
 dia_scrapper = BashOperator(
     task_id='dia_scrapper',
@@ -40,7 +67,7 @@ mercadona_scrapper = BashOperator(
     execution_timeout=timedelta(minutes=30),
     #pool='scrapper_pool',
     dag=dag,
-)
+)'''
 
-
-[dia_scrapper,mercadona_scrapper]
+[test]
+#[dia_scrapper,mercadona_scrapper]

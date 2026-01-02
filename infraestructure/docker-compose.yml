@@ -80,6 +80,8 @@ services:
       - AIRFLOW__CORE__PARALLELISM=4 
       - AIRFLOW__CORE__DAG_CONCURRENCY=4 
       - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30 
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - CHAT_ID=${CHAT_ID}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
@@ -99,6 +101,7 @@ services:
       - link_network
     command: >
       bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
+
 
 
 volumes:
