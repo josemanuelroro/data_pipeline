@@ -16,7 +16,7 @@ backend/spark/clean_file.py
 #---JENKINS---#
 infraestructure/jenkins/default-user.groovy
 infraestructure/jenkins/plugins.txt
-infraestructure/data_shared/logs
+infraestructure/data_shared/logs/
 infraestructure/.env
 #---NGINX---#
 infraestructure/auth
