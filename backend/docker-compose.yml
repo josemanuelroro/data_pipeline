@@ -89,6 +89,22 @@ services:
         - ./telegram/status.json:/app/status.json
         - ./telegram/scripts/:/app/
     
+# --- DATA LAKE ---
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: "test"
+      MINIO_ROOT_PASSWORD: "test1234567890"
+    # Puerto 9000: API (Para Python/Spark)
+    # Puerto 9001: Consola Web (Para ti)
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./datalake_minio:/data
+    command: server /data --console-address ":9001"
 
 volumes:
   mysql_data:

@@ -13,12 +13,13 @@ backend/scraper/post_script.py
 #---SPARK---#
 backend/spark/carga_posts.py
 backend/spark/clean_file.py
+backend/spark/carga_tablas.py
+backend/spark/clean_test.ipynb
+backend/spark/clean_mercados_to_silver.py
 #---JENKINS---#
 infraestructure/jenkins/default-user.groovy
 infraestructure/jenkins/plugins.txt
-infraestructure/data_shared/logs/access.log
-infraestructure/data_shared/logs/error.log
-infraestructure/data_shared
+infraestructure/data_shared/
 infraestructure/.env
 #---NGINX---#
 infraestructure/auth
