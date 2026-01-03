@@ -16,6 +16,8 @@ backend/spark/clean_file.py
 backend/spark/carga_tablas.py
 backend/spark/clean_test.ipynb
 backend/spark/clean_mercados_to_silver.py
+backend/spark/clean_mercados_to_gold.py
+backend//tmp
 #---JENKINS---#
 infraestructure/jenkins/default-user.groovy
 infraestructure/jenkins/plugins.txt

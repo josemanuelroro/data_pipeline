@@ -97,8 +97,10 @@ services:
     environment:
       MINIO_ROOT_USER: "test"
       MINIO_ROOT_PASSWORD: "test1234567890"
-    # Puerto 9000: API (Para Python/Spark)
-    # Puerto 9001: Consola Web (Para ti)
+    # Puerto 9000: API (Spark)
+    # Puerto 9001: Consola Web (GUI)
+    networks:
+        - data_network
     ports:
       - "9000:9000"
       - "9001:9001"
