@@ -70,8 +70,6 @@ services:
     user: root
     restart: on-failure
 
-
-
 # --- Monitoring ---
   telegram_bot:
       build: ./telegram
