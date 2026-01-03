@@ -26,7 +26,7 @@ infraestructure/.env
 #---NGINX---#
 infraestructure/auth
 #---MNIO---#
-backend/datalake_minio
+infraestructure/datalake_minio
 #---TELEGRAM---#
 backend/telegram/watcher_improved.py
 backend/telegram/test.py

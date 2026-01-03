@@ -55,11 +55,15 @@ services:
     depends_on:
       - jenkins
       - airflow
+      - minio
     environment:
       - NGINX_USER=${NGINX_USER}
       - NGINX_PASSWORD=${NGINX_PASSWORD}
       - JENKINS_DOMAIN=${JENKINS_DOMAIN}
       - AIRFLOW_DOMAIN=${AIRFLOW_DOMAIN}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_DOMAIN=${MINIO_DOMAIN}
     networks:
       #- backend_data_network
       - link_network
@@ -102,7 +106,54 @@ services:
     command: >
       bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true  && (airflow scheduler &) && airflow webserver"
 
+# --- DATA LAKE ---
+  minio:
+    image: minio/minio
+    container_name: minio_container
+    restart: always
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
 
+    #ports:
+    #  - "9000:9000" #spark
+    #  - "9001:9001" #web GUI (behind NGINX)
+    expose: 
+      - "9001"
+    volumes:
+      - ./datalake_minio:/data
+    networks:
+      - link_network
+    command: server /data --console-address ":9001"
+
+
+# --- DB (MySQL) ---
+  mysql_db:
+    build: ./mysql_init
+    container_name: mysql_db
+    networks:
+      - link_network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      #MYSQL_USER: ${MYSQL_USER}
+    #ports:
+      #- "127.0.0.1:3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      #- mysql_data:/var/lib/mysql
+      #- ./data_shared:/app/data/shared  
+      - ./mysql_init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
 volumes:
   jenkins_home:

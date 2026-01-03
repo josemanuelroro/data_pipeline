@@ -1,33 +1,7 @@
 version: '3.8'
 
 services:
-  # --- DB (MySQL) ---
-  mysql_db:
-    build: ./mysql_init
-    container_name: mysql_db
-    networks:
-      - data_network
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      #MYSQL_USER: ${MYSQL_USER}
-    ports:
-      - "127.0.0.1:3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./data_shared:/app/data/shared  
-      - ./mysql_init/init.sql:/docker-entrypoint-initdb.d/init.sql
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
-
-  # --- SCRAPPER ---
+    # --- SCRAPPER ---
   scraper:
     build: ./scraper       
     container_name: scrapper
@@ -87,24 +61,6 @@ services:
         - ./telegram/status.json:/app/status.json
         - ./telegram/scripts/:/app/
     
-# --- DATA LAKE ---
-  minio:
-    image: minio/minio
-    container_name: minio
-    restart: always
-    environment:
-      MINIO_ROOT_USER: "test"
-      MINIO_ROOT_PASSWORD: "test1234567890"
-    # Puerto 9000: API (Spark)
-    # Puerto 9001: Consola Web (GUI)
-    networks:
-        - data_network
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - ./datalake_minio:/data
-    command: server /data --console-address ":9001"
 
 volumes:
   mysql_data:
