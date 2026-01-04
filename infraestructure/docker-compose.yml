@@ -135,8 +135,10 @@ services:
     networks:
       - link_network
     environment:
+      MYSQL_DATABASE: metastore_db
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      #MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${HIVE_PASSWORD}
+      MYSQL_USER: hive
     expose:
       - "3306"
     volumes:
@@ -151,8 +153,10 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
+      interval: 5s
+      timeout: 5s
       retries: 10
+      start_period: 10s
 
  # --- HIVE ---     
   hive-metastore:
@@ -177,6 +181,7 @@ services:
       - "/bin/bash"
       - "-c"
       - |
+        sleep 30
         cp /tmp/hive-site_source.xml /opt/hive/conf/hive-site.xml
         sed -i "s|test|$HIVE_PASSWORD|g" /opt/hive/conf/hive-site.xml
         grep "ConnectionPassword" -A 1 /opt/hive/conf/hive-site.xml

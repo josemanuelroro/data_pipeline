@@ -1,11 +1,1 @@
 CREATE DATABASE IF NOT EXISTS mercados_lnd;
-USE mercados_lnd;
-
-
-
-CREATE DATABASE IF NOT EXISTS metastore_db;
-
-
-CREATE USER IF NOT EXISTS 'hive'@'%' IDENTIFIED BY '1123';
-GRANT ALL PRIVILEGES ON metastore_db.* TO 'hive'@'%';
-FLUSH PRIVILEGES;
