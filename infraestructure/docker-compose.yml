@@ -114,12 +114,13 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
-
     #ports:
     #  - "9000:9000" #spark
     #  - "9001:9001" #web GUI (behind NGINX)
+    #- "127.0.0.1:9000:9000"
     expose: 
       - "9001"
+      #- "9000"
     volumes:
       - ./datalake_minio:/data
     networks:
@@ -136,8 +137,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       #MYSQL_USER: ${MYSQL_USER}
-    #ports:
-      #- "127.0.0.1:3306:3306"
     expose:
       - "3306"
     volumes:
@@ -155,6 +154,51 @@ services:
       timeout: 20s
       retries: 10
 
+ # --- HIVE ---     
+  hive-metastore:
+      build: ./hive
+      container_name: hive-metastore
+      depends_on:
+        mysql_db:
+          condition: service_healthy
+        minio:
+          condition: service_started
+      environment:
+        SERVICE_NAME: metastore
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        MINIO_USER: ${MINIO_USER}
+        MINIO_PASSWORD: ${MINIO_PASSWORD}
+        HIVE_PASSWORD: ${HIVE_PASSWORD}
+      volumes:
+        - ./hive/conf/hive-site.xml:/tmp/hive-site_source.xml
+      networks:
+        - link_network
+      entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - |
+        cp /tmp/hive-site_source.xml /opt/hive/conf/hive-site.xml
+        sed -i "s|test|$HIVE_PASSWORD|g" /opt/hive/conf/hive-site.xml
+        grep "ConnectionPassword" -A 1 /opt/hive/conf/hive-site.xml
+        /opt/hive/bin/schematool -dbType mysql -initOrUpgradeSchema && \
+        /opt/hive/bin/hive --service metastore
+
+
+ # --- TRINO --- 
+  trino:
+    build: ./trino  
+    container_name: trino
+    depends_on:
+        mysql_db:
+          condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+    networks:
+      - link_network
+  
 volumes:
   jenkins_home:
 
