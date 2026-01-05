@@ -35,7 +35,7 @@ default_args = {
 dag = DAG(
     'scrapper_dag',
     default_args=default_args,
-    description='Execute scrapper at 5pm',
+    description='Execute scrapper at 19pm',
     schedule_interval='0 19 * * *',  
     catchup=False,
     max_active_tasks=3,
@@ -47,7 +47,7 @@ dag = DAG(
 # Tareas para ejecutar los scrapers dentro del contenedor 'scrapper_py'
 dia_scrapper = BashOperator(
     task_id='dia_scrapper',
-    bash_command='docker exec scrapper python3 -u /app/dia_scrapper.py &',
+    bash_command='docker exec scrapper python3 -u /app/dia_scrapper.py',
     execution_timeout=timedelta(minutes=30),
     #pool='scrapper_pool',
     on_success_callback=notificar,
@@ -57,7 +57,7 @@ dia_scrapper = BashOperator(
 
 mercadona_scrapper = BashOperator(
     task_id='mercadona_scrapper',
-    bash_command='docker exec scrapper python3 -u /app/mercadona_scrapper.py &',
+    bash_command='docker exec scrapper python3 -u /app/mercadona_scrapper.py',
     execution_timeout=timedelta(minutes=30),
     on_success_callback=notificar,
     dag=dag,

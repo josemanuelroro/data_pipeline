@@ -88,7 +88,6 @@ services:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - CHAT_ID=${CHAT_ID}
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://root:${MYSQL_PASSWORD}@mysql_db:3306/airflow_db
     volumes:
       - ./airflow/dags:/opt/airflow/dags
