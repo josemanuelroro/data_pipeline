@@ -77,6 +77,7 @@ services:
       dockerfile: airflow/Dockerfile
     restart: always
     environment:
+      - MY_SQL_PASSWORD=${MYSQL_PASSWORD}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - _AIRFLOW_WWW_USER_CREATE=true
       - _AIRFLOW_WWW_USER_USERNAME=airflow
@@ -85,7 +86,10 @@ services:
       - AIRFLOW__CORE__DAG_CONCURRENCY=4 
       - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30 
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - CHAT_ID=${CHAT_ID}
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://root:${MYSQL_PASSWORD}@mysql_db:3306/airflow_db
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
@@ -139,8 +143,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_PASSWORD: ${HIVE_PASSWORD}
       MYSQL_USER: hive
-    expose:
-      - "3306"
+    ports:
+      - "127.0.0.1:3306:3306"
+    #expose:
+    #  - "3306"
     volumes:
       #- mysql_data:/var/lib/mysql
       #- ./data_shared:/app/data/shared  

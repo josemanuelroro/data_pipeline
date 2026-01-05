@@ -28,8 +28,7 @@ default_args = {
     'depends_on_past': False,
     'start_date': datetime(2025, 12, 22),  # Ajusta la fecha de inicio
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
-    'on_success_callback': notificar,
+    'retry_delay': timedelta(minutes=5)
 }
 
 # Crear el DAG
@@ -51,6 +50,7 @@ dia_scrapper = BashOperator(
     bash_command='docker exec scrapper python3 -u /app/dia_scrapper.py &',
     execution_timeout=timedelta(minutes=30),
     #pool='scrapper_pool',
+    on_success_callback=notificar,
     dag=dag,
 )
 
@@ -59,7 +59,7 @@ mercadona_scrapper = BashOperator(
     task_id='mercadona_scrapper',
     bash_command='docker exec scrapper python3 -u /app/mercadona_scrapper.py &',
     execution_timeout=timedelta(minutes=30),
-    #pool='scrapper_pool',
+    on_success_callback=notificar,
     dag=dag,
 )
 

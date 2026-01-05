@@ -55,14 +55,14 @@ for fichero in os.listdir("/app/data/scrapper_vol/mercados"):
     row_initial=df.count()
     row_final=df_clean.count()
     
-    with open("/app/data/scrapper_vol/logs/mercados.txt","a+") as f:
+    with open("/app/data/scrapper_vol/logs/mercados.log","a+") as f:
         f.write(f"{dataframe}|{row_initial}|{row_final}|{row_initial-row_final}|{datetime.now().strftime('%Y-%m-%d')}\n")
     
     df_clean.coalesce(1).write.mode("overwrite").parquet(f"s3a://bronze/mercados/{dataframe}/")
 
 jvm = spark.sparkContext._jvm
 conf = spark.sparkContext._jsc.hadoopConfiguration()
-local_path = jvm.org.apache.hadoop.fs.Path("file:///app/data/scrapper_vol/logs/mercados.txt")
-remote_path = jvm.org.apache.hadoop.fs.Path("s3a://bronze/mercados/mercados.txt")
+local_path = jvm.org.apache.hadoop.fs.Path("file:///app/data/scrapper_vol/logs/mercados.log")
+remote_path = jvm.org.apache.hadoop.fs.Path("s3a://bronze/mercados/mercados.log")
 fs = remote_path.getFileSystem(conf)
 fs.copyFromLocalFile(False, True, local_path, remote_path)

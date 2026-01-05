@@ -8,6 +8,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN pip install apache-airflow-providers-mysql
+
 # Permissions to the user airflow
 RUN groupadd -f docker && usermod -aG docker airflow
 
