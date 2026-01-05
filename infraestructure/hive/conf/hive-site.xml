@@ -1,4 +1,10 @@
 <configuration>
+
+    <property>
+        <name>fs.s3a.aws.credentials.provider</name>
+        <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider</value>
+    </property>
+    
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:mysql://mysql_db:3306/metastore_db?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</value>
@@ -26,12 +32,12 @@
 
     <property>
         <name>fs.s3a.access.key</name>
-        <value>${env:MINIO_USER}</value>
+        <value>pajarito</value>
     </property>
 
     <property>
         <name>fs.s3a.secret.key</name>
-        <value>${env:MINIO_PASSWORD}</value>
+        <value>caballito</value>
     </property>
 
     <property>

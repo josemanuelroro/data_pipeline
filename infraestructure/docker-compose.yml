@@ -120,7 +120,7 @@ services:
     #- "127.0.0.1:9000:9000"
     expose: 
       - "9001"
-      #- "9000"
+      - "9000"
     volumes:
       - ./datalake_minio:/data
     networks:
@@ -184,6 +184,8 @@ services:
         sleep 30
         cp /tmp/hive-site_source.xml /opt/hive/conf/hive-site.xml
         sed -i "s|test|$HIVE_PASSWORD|g" /opt/hive/conf/hive-site.xml
+        sed -i "s|pajarito|$MINIO_USER|g" /opt/hive/conf/hive-site.xml
+        sed -i "s|caballito|$MINIO_PASSWORD|g" /opt/hive/conf/hive-site.xml
         grep "ConnectionPassword" -A 1 /opt/hive/conf/hive-site.xml
         /opt/hive/bin/schematool -dbType mysql -initOrUpgradeSchema && \
         /opt/hive/bin/hive --service metastore
