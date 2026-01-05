@@ -40,6 +40,8 @@ services:
       - DB_HOST=metadata_db
       - DB_PASSWORD=${MYSQL_PASSWORD}
       - DB_USER=${MYSQL_USER}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
     user: root
     restart: on-failure
 

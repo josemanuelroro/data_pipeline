@@ -63,5 +63,20 @@ mercadona_scrapper = BashOperator(
     dag=dag,
 )
 
+bronze_bucket = BashOperator(
+    task_id='bronze_bucket',
+    bash_command='docker exec spark python3 -u /app/scripts/clean_bronze.py',
+    execution_timeout=timedelta(minutes=30),
+    #pool='scrapper_pool',
+    dag=dag,
+)
 
-[dia_scrapper,mercadona_scrapper]
+bronze_monitor_log = BashOperator(
+    task_id='bronze_monitor_log',
+    bash_command='docker exec telegram_monitor python3 -u /app/bronze_monitor_log.py',
+    execution_timeout=timedelta(minutes=30),
+    #pool='scrapper_pool',
+    dag=dag,
+)
+
+[dia_scrapper,mercadona_scrapper]>>bronze_bucket>>bronze_monitor_log

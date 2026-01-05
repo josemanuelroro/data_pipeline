@@ -9,7 +9,7 @@ LOG_FILE = "/infraestructure/data_shared/logs/serv_access.log"
 
 EXTENSIONES_IGNORAR = ('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.map', '.ttf')
 CACHE_IPS = {}
-MI_IP = ""
+MI_IP = "172.24.0.1"
 TIEMPO_SILENCIO = 600
 
 def get_ip_details(ip):

@@ -34,3 +34,4 @@ infraestructure/datalake_minio
 #---TELEGRAM---#
 backend/telegram/watcher_improved.py
 backend/telegram/test.py
+backend/telegram/status.json
