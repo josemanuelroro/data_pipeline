@@ -20,7 +20,7 @@ nueva_pagina.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64;
 nueva_pagina.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
 nueva_pagina.add_header('Accept-Language', 'en-US,en;q=0.5')
 web = urllib.request.urlopen(nueva_pagina).read()
-doc_nuevo=BeautifulSoup(web,'html.parser')
+doc_nuevo=BeautifulSoup(web,'lxml')
 test=json.loads(doc_nuevo.text)
 enlace=[]
 
@@ -63,7 +63,7 @@ for k_idx,k in enumerate(enlace):
         pag.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
         pag.add_header('Accept-Language', 'en-US,en;q=0.5')
         web = urllib.request.urlopen(pag).read()
-        doc_nuevo=BeautifulSoup(web,'html.parser')
+        doc_nuevo=BeautifulSoup(web,'lxml')
         data=json.loads(doc_nuevo.text)
         
         

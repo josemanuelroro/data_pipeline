@@ -19,7 +19,7 @@ def f_paginas():
 
     url='https://tienda.mercadona.es/api/categories/'
     pag=urllib.request.urlopen(url)
-    doc=BeautifulSoup(pag,features='html.parser')
+    doc=BeautifulSoup(pag,features='lxml')
     resp = requests.get(url=url)
     data=resp.json()
     categorias=[]
@@ -39,7 +39,7 @@ def f_paginas():
 for k_idx,k in enumerate(num_paginas):
         url='https://tienda.mercadona.es/api/categories/'+str(k)+'/'
         pag=urllib.request.urlopen(url)
-        doc=BeautifulSoup(pag,features='html.parser')
+        doc=BeautifulSoup(pag,features='lxml')
         resp = requests.get(url=url)
         data=resp.json()
         nombre_l=[]
