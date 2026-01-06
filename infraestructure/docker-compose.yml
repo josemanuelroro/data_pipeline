@@ -3,6 +3,7 @@ services:
   jenkins:
     build: ./jenkins
     container_name: cicd_jenkins
+    restart: always
     #user: root
     environment:
       - JENKINS_OPTS="--logfile=/var/jenkins_home/jenkins.log"
@@ -45,6 +46,7 @@ services:
     build: ./nginx
     container_name: gateway_nginx
     user: root
+    restart: always
     ports:
       - "90:80" 
     volumes:
@@ -200,20 +202,35 @@ services:
   trino:
     build: ./trino  
     container_name: trino
+    restart: always
     depends_on:
         mysql_db:
           condition: service_healthy
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8082:8080"
     environment:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
     networks:
       - link_network
-  
+
+# --- BI (Metabase) ---
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase-data:/metabase-data
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
+    networks:
+        - link_network
+
 volumes:
   jenkins_home:
-
+  metabase-data:
 networks:
   link_network:
    driver: bridge
