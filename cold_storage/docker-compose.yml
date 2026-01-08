@@ -1,0 +1,16 @@
+services:
+  drive_sync:
+      image: rclone/rclone:latest
+      container_name: drive_sync
+      restart: always
+      networks:
+      - link_network
+      volumes:
+        - ./config/rclone:/config/rclone
+        - ./app:/app
+        - ../backend/data_shared/mercados:/app/cold_storage/data_mercados
+      entrypoint: "tail -f /dev/null"
+
+networks:
+  link_network:
+    external: true

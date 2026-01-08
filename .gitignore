@@ -34,3 +34,5 @@ infraestructure/datalake_minio
 backend/telegram/watcher_improved.py
 backend/telegram/test.py
 backend/telegram/status.json
+#---COLD STORAGE---#
+cold_storage/config/rclone/rclone.conf
