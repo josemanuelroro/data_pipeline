@@ -39,7 +39,7 @@ def get_flag_emoji(country_code):
 def enviar_telegram(mensaje):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     try:
-        print(f"Enviando alerta: {mensaje}")
+        #print(f"Enviando alerta: {mensaje}")
         requests.post(url, data={"chat_id": CHAT_ID, "text": mensaje})
     except Exception as e:
         print(f"Error enviando Telegram: {e}")
@@ -54,10 +54,10 @@ def follow(thefile):
         yield line
 
 if __name__ == "__main__":
-    print(f"--- Vigilante de Jenkins (Tiempo Real) Iniciado: {datetime.datetime.now()} ---")
+    #print(f"--- Vigilante de Jenkins (Tiempo Real) Iniciado: {datetime.datetime.now()} ---")
 
     while not os.path.exists(LOG_FILE):
-        print(f"Esperando fichero: {LOG_FILE}...")
+        #print(f"Esperando fichero: {LOG_FILE}...")
         time.sleep(5)
 
     print("Fichero detectado. Monitorizando...")

@@ -30,6 +30,7 @@ services:
       - ./data_shared:/app/data/scrapper_vol
       - ./spark:/app/scripts
       - ./notebooks:/home/jovyan/work
+      - ../infraestructure/data_shared/logs:/app/data/nginx_logs
     logging:
       driver: "json-file"
       options:
@@ -42,9 +43,10 @@ services:
       - DB_USER=${MYSQL_USER}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_DOMAIN=${MINIO_DOMAIN}
     user: root
     restart: on-failure
-
+    command: bash -c "python3 -u ./scripts/image_generator.py"
 
 # --- Monitoring ---
   telegram_bot:
@@ -62,7 +64,11 @@ services:
         - ../infraestructure/data_shared/logs:/infraestructure/data_shared/logs
         - ./telegram/status.json:/app/status.json
         - ./telegram/scripts/:/app/
-    
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
 volumes:
   mysql_data:

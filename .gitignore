@@ -19,7 +19,7 @@ backend/spark/clean_file.py
 backend/spark/carga_tablas.py
 backend/spark/clean_test.ipynb
 backend/spark/clean_mercados_to_gold.py
-backend//tmp
+backend/tmp
 backend/spark/spark-warehouse
 backend/spark/metastore_db
 backend/spark/derby.log

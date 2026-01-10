@@ -18,7 +18,8 @@ WORKDIR /app
 
 
 RUN pip install --no-cache-dir pandas mysql-connector-python findspark && \
-    pip install --no-cache-dir pyspark==3.5.3 py4j
+    pip install --no-cache-dir pyspark==3.5.3 py4j && \
+    pip install --no-cache-dir requests matplotlib s3fs pyarrow
 
 
 ENV HADOOP_AWS_VERSION=3.3.4
@@ -47,4 +48,4 @@ RUN SPARK_JARS_PATH=$(python -c "import pyspark; print(pyspark.__path__[0])")/ja
 # COPY . .
 
 
-CMD ["tail", "-f", "/dev/null"]
+#CMD ["tail", "-f", "/dev/null"]
