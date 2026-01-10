@@ -7,6 +7,7 @@ import os
 import warnings
 import requests
 from datetime import datetime
+import time
 findspark.init()
 print(pyspark.__version__)
 
@@ -30,6 +31,7 @@ def get_ip_details(ip):
     try:
         if ip!=MI_IP:
             url = f"http://ip-api.com/json/{ip}?fields=status,country,regionName,city,lat,lon,isp,org,query"
+            time.sleep(1.5)
             response = requests.get(url,headers=headers, timeout=3).json()
             #print(response)
             if response['status'] == 'success':
