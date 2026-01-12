@@ -36,3 +36,5 @@ backend/telegram/test.py
 backend/telegram/status.json
 #---COLD STORAGE---#
 cold_storage/config/rclone/rclone.conf
+#---UPDATER---#
+backend/scripts/main.py
