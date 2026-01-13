@@ -14,7 +14,7 @@
 
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col,to_date,year,month,regexp_replace,udf,filter,split,lit
+from pyspark.sql.functions import col,to_date,year,month,regexp_replace,udf,filter,split,lit,pow
 from pyspark.sql.types import StringType,StructType, StructField,DoubleType
 import findspark
 import os
@@ -118,8 +118,7 @@ df_adivino = df_con_numero.join(df_final_2,condicion,"left")
 
 
 #7 Join the location dataframe(city) with country df
-df_final_3 = df_country.join(df_adivino,df_adivino["country_iso_code"]==df_country["country_iso_code"],'inner')
-
+df_final_3 = df_country.join(df_adivino, "country_iso_code", 'inner')
 
 #8 Generate de ips for network df
 df_asn_split = df_network.withColumn("ip_text", split(col("network"), "/").getItem(0)) \
@@ -144,13 +143,13 @@ condicion = ((df_final_3["ip_numero"] >= df_asn_ready["asn_start"]) & (df_final_
 
 #9 join the dataframes
 df_final_4 = df_final_3.join(df_asn_ready,condicion,'left')
-df_final_4.select(col("country_name").alias("country"),\
+df_final_5 = df_final_4.select(col("country_name").alias("country"),\
     col("city_name").alias("city"),col("network").alias("ip"),\
-        col("autonomous_system_organization").alias("isp"),col("_c3").alias("fecha")).show()
+        col("autonomous_system_organization").alias("isp"),col("_c3").alias("fecha"))
 
 
 #10 Save in silver layer
-df_final.coalesce(1).write.mode("append").parquet(f"s3a://silver/acceso_logs/")
+df_final_5.coalesce(1).write.mode("append").parquet(f"s3a://silver/acceso_logs/")
 
 #11 Truncate the log file
 with open("/app/data/nginx_logs/serv_access.log", 'r+') as f:
@@ -162,6 +161,7 @@ with open("/app/data/nginx_logs/serv_access.log", 'r+') as f:
 
 
 df_silver = spark.read.parquet("s3a://silver/acceso_logs/")
+
 #12 Filter dataframe
 df_gold = df_silver.filter((col("country")!="local") & (col("country")!="err"))
 #13 Save in gold layer

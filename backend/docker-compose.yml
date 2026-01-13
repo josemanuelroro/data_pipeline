@@ -73,7 +73,7 @@ services:
   updater:
     build: ./updater
     container_name: data_updater
-    #profiles: ["tools"]  # <--- TRUCO: Solo arranca si lo pides explícitamente
+    #profiles: ["tools"]
     volumes:
       - ./updater/scripts/:/app/
       - ./data_shared/source_data:/app/source_data

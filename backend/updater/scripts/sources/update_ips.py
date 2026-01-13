@@ -1,7 +1,7 @@
 #========================================================================
 #The script connects to Maxmind web and dowload the .csv files
 #------------------------------------------------------------------------
-#2026/01/12 Add the extraction fo the city block ips
+#2026/01/12 Add the extraction for the city block ips
 #
 #
 #
