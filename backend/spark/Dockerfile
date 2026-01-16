@@ -20,7 +20,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir pandas mysql-connector-python findspark && \
     pip install --no-cache-dir pyspark==3.5.3 py4j && \
     pip install --no-cache-dir requests matplotlib s3fs pyarrow && \
-    pip install --no-cache-dir delta-spark==3.2.0
+    pip install --no-cache-dir delta-spark==3.2.0 great_expectations
 
 
 ENV HADOOP_AWS_VERSION=3.3.4

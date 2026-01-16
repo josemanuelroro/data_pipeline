@@ -47,6 +47,8 @@ spark = SparkSession.builder \
     .config("spark.hadoop.fs.s3a.connection.ttl", "3600") \
     .config("spark.hadoop.fs.s3a.committer.name", "directory") \
     .config("spark.hadoop.fs.s3a.committer.staging.conflict-mode", "append") \
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
 
 print("✅ Spark iniciado correctamente.")
@@ -68,15 +70,15 @@ df_silver=df_clean.select(
     col("peso__seco").cast(DecimalType(10,2)),
     col("fecha").cast("date")
 )
-
+spark.sql("DROP DATABASE mercados_silver CASCADE")
 spark.sql("CREATE DATABASE IF NOT EXISTS mercados_silver LOCATION 's3a://silver/mercados/'")
-spark.sql("CREATE DATABASE IF NOT EXISTS mercados_gold   LOCATION 's3a://gold/mercados/'")
+#spark.sql("CREATE DATABASE IF NOT EXISTS mercados_gold   LOCATION 's3a://gold/mercados/'")
 df_silver = df_silver \
     .withColumn("year", year(col("fecha"))) \
     .withColumn("month", month(col("fecha")))
 #df_silver.write.mode("overwrite").partitionBy("year","month").parquet("s3a://datalake/mercadona/")
 df_silver.write \
-    .format("parquet") \
+    .format("delta") \
     .mode("overwrite") \
     .partitionBy("year", "month") \
     .option("path", "s3a://silver/mercados/mercadona") \

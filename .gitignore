@@ -19,6 +19,8 @@ backend/spark/clean_file.py
 backend/spark/carga_tablas.py
 backend/spark/clean_test.ipynb
 backend/spark/clean_mercados_to_gold.py
+backend/spark/control_general.py
+backend/spark/control.py
 backend/tmp
 backend/spark/spark-warehouse
 backend/spark/metastore_db
@@ -40,3 +42,6 @@ backend/telegram/scripts/debug_fondo.log
 cold_storage/config/rclone/rclone.conf
 #---UPDATER---#
 backend/scripts/main.py
+#---DBT---#
+backend/dbt/dbt_profiles/profiles.yml
+backend/dbt/scripts/
