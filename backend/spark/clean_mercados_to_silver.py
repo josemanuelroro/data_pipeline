@@ -15,15 +15,9 @@ try:
 except:
     print("No session")
 
-import pyspark
-from pyspark.sql import SparkSession
-import findspark
-import os
-
 findspark.init()
 
 
-print("Iniciando Spark (Drivers cargados desde Docker)...")
 
 spark = SparkSession.builder \
     .appName("Spark load to silver") \
@@ -51,7 +45,7 @@ spark = SparkSession.builder \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
 
-print("✅ Spark iniciado correctamente.")
+print("✅ Spark")
     
 df=spark.read.csv(f"/app/data/scrapper_vol/mercados/mercadona.csv",header=True,sep="|")
 df_clean=df.filter(col("comercio").isNotNull())

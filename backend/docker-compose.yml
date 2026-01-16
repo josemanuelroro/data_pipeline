@@ -82,15 +82,15 @@ services:
       - MAXMIND_KEY=${MAXMIND_KEY}
 
 # --- DBT ---
-    dbt:
-      build: ./dbt
-      container_name: dbt_container
-      restart: always
-      volumes:
-        - ./dbt/dbt_profiles:/root/.dbt
-      networks:
-        - link_network
-        - data_network
+  dbt:
+    build: ./dbt
+    container_name: dbt_container
+    restart: always
+    volumes:
+      - ./dbt/dbt_profiles:/root/.dbt
+    networks:
+      - link_network
+      - data_network
 
 volumes:
   mysql_data:
