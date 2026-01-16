@@ -23,6 +23,7 @@ backend/tmp
 backend/spark/spark-warehouse
 backend/spark/metastore_db
 backend/spark/derby.log
+backend/spark/test_delta.py
 #---JENKINS---#
 infraestructure/jenkins/default-user.groovy
 infraestructure/jenkins/plugins.txt

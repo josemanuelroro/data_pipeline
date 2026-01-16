@@ -5,6 +5,7 @@ USER root
 
 
 COPY minio.properties.template /etc/trino/catalog/minio.properties.template
+COPY delta.properties.template /etc/trino/catalog/delta.properties.template
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
