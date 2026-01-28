@@ -1,4 +1,4 @@
-# 🚀 End-to-End On-Premise Data Lakehouse
+# 🚀 End-to-End Self-Hosted Data Lakehouse
 
 > ⚠️ **Work in Progress:** This project is currently in **Beta**. The architecture is stable, but new scrapers and optimizations are being added weekly.
 
@@ -7,7 +7,7 @@
 ![Open Source](https://img.shields.io/badge/100%25-Open%20Source-green)
 
 ## 📋 Project Overview
-This project implements a comprehensive **Data Lakehouse** platform deployed entirely **on-premise** using a 100% Open Source stack.
+This project implements a comprehensive **Data Lakehouse** platform deployed entirely **Self-Hosted** using a 100% Open Source stack.
 
 <p align="center">
   <img src="Architecture.svg" alt="Architecture Diagram" width="100%">
